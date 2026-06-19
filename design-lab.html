@@ -258,12 +258,9 @@ body[data-ink="safe"] .card{--ink:var(--paper);--accent:var(--coral);--ink2:rgba
 .photo-img{position:absolute;inset:0}
 .photo-img img{width:100%;height:100%;object-fit:cover;display:block}
 
-/* canvas: a single flat color, no imagery — a blank plate to design into.
-   no scrim, so the name clears the plate instead of overlapping it (no
-   gradient backing to keep it legible). */
+/* canvas: a single flat color behind the same grain + scrim as every other
+   plate — the name still sits on the color, there's just no imagery */
 .canvas{position:absolute;inset:0}
-.card.is-canvas[data-format="poster"] .body,
-.card.is-canvas[data-format="square"] .body{margin-top:0;padding-top:10px}
 
 .fb{position:absolute;inset:0;overflow:hidden}
 .fb-type{font-family:var(--display);text-transform:uppercase;user-select:none;letter-spacing:.01em}
@@ -480,9 +477,9 @@ const BANDS = [
   {slug:'pale-cassette', name:'Pale Cassette', city:'Richmond, VA', tags:['shoegaze','dream pop'], bio:'Two guitars arguing about the weather in a stairwell.', photo:'live2', credit:'photo: m. okafor', track:'Sunday Tape', next:{date:'JUL 30', venue:'Gallery5'}},
 ];
 
-/* canvas bands: no art, no type tricks, no ombré — the plate is one flat
-   ink from the house palette. a blank canvas, so an incoming designer reads
-   the layout without being anchored to anyone's house style. */
+/* canvas bands: no art, no type tricks — the plate is one flat ink from the
+   house palette behind the usual grain + scrim. a blank canvas, so an
+   incoming designer reads the layout without being anchored to a house style. */
 const CANVAS_BANDS = [
   {slug:'paper-anniversary', name:'Paper Anniversary', city:'Richmond, VA', tags:['indie folk','chamber pop'], bio:'Love songs filed under miscellaneous.', canvas:INKS[0], track:'First Draft', next:{date:'JUL 19', venue:'The Camel'}},
   {slug:'public-pool', name:'Public Pool', city:'Virginia Beach, VA', tags:['surf','garage'], bio:'Surf rock for landlocked summers.', canvas:INKS[1], track:'Deep End', next:{date:'AUG 05', venue:'Cobra Cabana'}},
@@ -539,16 +536,19 @@ function dealInks(){
 }
 
 function cardHTML(band, format){
-  const [ink, ink2, ink3] = dealInks();
+  let [ink, ink2, ink3] = dealInks();
+  // canvas plates: mix & match so the name never sits in the plate's own ink
+  if (band.canvas && ink === band.canvas) [ink, ink2, ink3] = [ink2, ink3, ink];
   return `
-  <article class="card${band.canvas ? ' is-canvas' : ''}" data-format="${format}" style="--card-ink:${ink};--card-ink2:${ink2};--card-ink3:${ink3}" aria-label="${band.name}">
+  <article class="card" data-format="${format}" style="--card-ink:${ink};--card-ink2:${ink2};--card-ink3:${ink3}" aria-label="${band.name}">
     <div class="photo">
       ${band.photo
         ? `<div class="photo-img">${PHOTOS[band.photo]}</div><span class="credit">${band.credit}</span>`
         : band.canvas
           ? `<div class="canvas" style="background:${band.canvas}"></div>`
           : FB[rndApproach()](band)}
-      ${band.canvas ? '' : `<div class="grain"></div><div class="scrim"></div>`}
+      <div class="grain"></div>
+      <div class="scrim"></div>
     </div>
     <div class="body">
       <h2 class="name">${band.name}</h2>
