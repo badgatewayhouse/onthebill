@@ -258,6 +258,9 @@ body[data-ink="safe"] .card{--ink:var(--paper);--accent:var(--coral);--ink2:rgba
 .photo-img{position:absolute;inset:0}
 .photo-img img{width:100%;height:100%;object-fit:cover;display:block}
 
+/* canvas: a single flat color, no imagery — a blank plate to design into */
+.canvas{position:absolute;inset:0}
+
 .fb{position:absolute;inset:0;overflow:hidden}
 .fb-type{font-family:var(--display);text-transform:uppercase;user-select:none;letter-spacing:.01em}
 
@@ -444,6 +447,17 @@ footer.lab{padding:20px;font-size:10px;letter-spacing:.12em;color:#8a8a85;text-t
   </div>
 </section>
 
+<section class="panel">
+  <div class="panel-head">
+    <div class="panel-num">04</div>
+    <div class="panel-name">CANVAS — COLOR-ONLY PLATES</div>
+    <div class="panel-note">An alternative to the placeholder art above: four bands whose plate is a single flat color. No iconography, no type tricks, no house style — a blank canvas so an incoming designer sees the layout and typography without being anchored to anyone's existing work. Compare against THE WALL to judge which framing invites better creative input.</div>
+  </div>
+  <div class="host">
+    <div class="wall" id="canvas-wall"></div>
+  </div>
+</section>
+
 <footer class="lab">CHARCOAL #131316 · PAPER #F4F1EA · CORAL #EF6A5A · CYAN #5BC8D6 · YELLOW #FFD23F · ANTON / IBM PLEX MONO · PLAYER = 42PX · PLATES (RANDOM PER RENDER): MASTHEAD / SPINE / WAVEFORM / RINGS / ARCS / WEDGE / ABSTRACT</footer>
 
 <script>
@@ -460,6 +474,16 @@ const BANDS = [
   {slug:'motor-saint', name:'Motor Saint', city:'Richmond, VA', tags:['garage','punk'], bio:'Songs about cars that don\u2019t start and people who won\u2019t leave.', photo:'live1', credit:'photo: t. vance', track:'Idle Hands', next:{date:'JUL 12', venue:'The Broadberry'}},
   {slug:'night-vacuum', name:'Night Vacuum', city:'Richmond, VA', tags:['synth punk','no wave'], bio:'A drum machine with a grudge.', fb:'wave', track:'Static Diet', next:{date:'AUG 02', venue:'Wonderland'}},
   {slug:'pale-cassette', name:'Pale Cassette', city:'Richmond, VA', tags:['shoegaze','dream pop'], bio:'Two guitars arguing about the weather in a stairwell.', photo:'live2', credit:'photo: m. okafor', track:'Sunday Tape', next:{date:'JUL 30', venue:'Gallery5'}},
+];
+
+/* canvas bands: no art, no type tricks — the plate is a single flat color.
+   a blank canvas, so an incoming designer reads the layout without being
+   anchored to anyone's house style. one color per band. */
+const CANVAS_BANDS = [
+  {slug:'paper-anniversary', name:'Paper Anniversary', city:'Richmond, VA', tags:['indie folk','chamber pop'], bio:'Love songs filed under miscellaneous.', canvas:'#E6DFD1', track:'First Draft', next:{date:'JUL 19', venue:'The Camel'}},
+  {slug:'public-pool', name:'Public Pool', city:'Virginia Beach, VA', tags:['surf','garage'], bio:'Surf rock for landlocked summers.', canvas:'#A9B7B2', track:'Deep End', next:{date:'AUG 05', venue:'Cobra Cabana'}},
+  {slug:'weathervane', name:'Weathervane', city:'Roanoke, VA', tags:['americana','alt-country'], bio:"Alt-country that can't pick a direction.", canvas:'#C2AE97', track:'Due North', next:{date:'AUG 16', venue:'The Broadberry'}},
+  {slug:'minor-holiday', name:'Minor Holiday', city:'Richmond, VA', tags:['dream pop','shoegaze'], bio:'Dream pop for a long weekend that never comes.', canvas:'#9AA0B4', track:'Half Day', next:{date:'JUL 26', venue:'Gallery5'}},
 ];
 
 /* photo stand-ins: inline SVG, grayscale, preserveAspectRatio=slice ~ object-fit:cover */
@@ -517,7 +541,9 @@ function cardHTML(band, format){
     <div class="photo">
       ${band.photo
         ? `<div class="photo-img">${PHOTOS[band.photo]}</div><span class="credit">${band.credit}</span>`
-        : FB[rndApproach()](band)}
+        : band.canvas
+          ? `<div class="canvas" style="background:${band.canvas}"></div>`
+          : FB[rndApproach()](band)}
       <div class="grain"></div>
       <div class="scrim"></div>
     </div>
@@ -641,9 +667,12 @@ function renderStatics(){
     stackPick.map(b => `<div class="card-shell">${cardHTML(b,'square')}</div>`).join('');
   document.getElementById('wall').innerHTML =
     BANDS.map(b => `<div class="card-shell">${cardHTML(b,'poster')}</div>`).join('');
+  document.getElementById('canvas-wall').innerHTML =
+    CANVAS_BANDS.map(b => `<div class="card-shell">${cardHTML(b,'poster')}</div>`).join('');
   mountFit(document.getElementById('stack-strip'));
   mountFit(document.getElementById('stack-square'));
   mountFit(document.getElementById('wall'));
+  mountFit(document.getElementById('canvas-wall'));
 }
 renderStatics();
 
