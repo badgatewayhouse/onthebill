@@ -485,6 +485,10 @@ const CANVAS_BANDS = [
   {slug:'public-pool', name:'Public Pool', city:'Virginia Beach, VA', tags:['surf','garage'], bio:'Surf rock for landlocked summers.', canvas:INKS[1], track:'Deep End', next:{date:'AUG 05', venue:'Cobra Cabana'}},
   {slug:'weathervane', name:'Weathervane', city:'Roanoke, VA', tags:['americana','alt-country'], bio:"Alt-country that can't pick a direction.", canvas:INKS[2], track:'Due North', next:{date:'AUG 16', venue:'The Broadberry'}},
   {slug:'minor-holiday', name:'Minor Holiday', city:'Richmond, VA', tags:['dream pop','shoegaze'], bio:'Dream pop for a long weekend that never comes.', canvas:INKS[0], track:'Half Day', next:{date:'JUL 26', venue:'Gallery5'}},
+  /* matchInk: name is dealt in the plate's own ink on purpose — a test pair to
+     see whether the scrim alone carries the type, i.e. if mix & match is needed */
+  {slug:'screen-door', name:'Screen Door', city:'Richmond, VA', tags:['indie rock','jangle'], bio:'Letting the summer in and the bugs too.', canvas:INKS[1], matchInk:true, track:'Latch', next:{date:'AUG 12', venue:'The Camel'}},
+  {slug:'tin-roof', name:'Tin Roof', city:'Charlottesville, VA', tags:['alt-country','folk'], bio:'Rain songs for a dry county.', canvas:INKS[2], matchInk:true, track:'Downpour', next:{date:'JUL 28', venue:'The Southern'}},
 ];
 
 /* photo stand-ins: inline SVG, grayscale, preserveAspectRatio=slice ~ object-fit:cover */
@@ -537,8 +541,10 @@ function dealInks(){
 
 function cardHTML(band, format){
   let [ink, ink2, ink3] = dealInks();
-  // canvas plates: mix & match so the name never sits in the plate's own ink
-  if (band.canvas && ink === band.canvas) [ink, ink2, ink3] = [ink2, ink3, ink];
+  if (band.canvas){
+    if (band.matchInk) ink = band.canvas;                                  // force a match — test if contrast is needed
+    else if (ink === band.canvas) [ink, ink2, ink3] = [ink2, ink3, ink];   // mix & match so the name avoids the plate's ink
+  }
   return `
   <article class="card" data-format="${format}" style="--card-ink:${ink};--card-ink2:${ink2};--card-ink3:${ink3}" aria-label="${band.name}">
     <div class="photo">
